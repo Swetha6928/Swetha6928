@@ -1,0 +1,27 @@
+!pip install pyspark
+from google.colab import drive
+drive.mount('/content/drive')from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.streaming import StreamingQuery
+
+spark = SparkSession.builder \
+        .appName("Stream Analysis") \
+        .master("local[*]") \
+        .getOrCreate()static_df = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("/content/drive/MyDrive/miniproject/miniproject.csv")streaming_df = spark.readStream \
+    .option("header", "true") \
+    .option("maxFilesPerTrigger", 1) \
+    .schema(static_df.schema) \
+    .csv("/content/drive/MyDrive/miniproject/")
+    grouped_df = streaming_df.groupBy("Gender").count()
+    streaming_query = grouped_df \
+    .writeStream \
+    .outputMode("complete") \
+    .format("console") \
+    .option("truncate", "false") \
+    .trigger(processingTime='10 seconds') \
+    .foreachBatch(lambda df, epochId: df.show()) \
+    .start()
+    streaming_query.awaitTermination(180)
