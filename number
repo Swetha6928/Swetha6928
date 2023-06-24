@@ -1,0 +1,13 @@
+import sys
+
+# Read input from standard input
+N = int(sys.stdin.readline().rstrip())
+S = sys.stdin.readline().rstrip()
+
+# Process the data
+output_line1 = N * 2
+output_line2 = S
+
+# Print the output to standard output
+sys.stdout.write(str(output_line1) + '\n')
+sys.stdout.write(output_line2 + '\n')
